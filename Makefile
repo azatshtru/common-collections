@@ -1,19 +1,18 @@
-sources := $(filter %.c,$(shell ls src))
-objects := $(foreach word,$(subst .c,.o,$(sources)),obj/$(word))
-sources := $(foreach word,$(sources),src/$(word))
+src := $(shell cd src && find . -name '*.c' -or -name '*.s')
+obj := $(addprefix obj/,$(src:.c=.o))
+headers := $(shell find include -name '*.h')
 
-.DELETE_ON_ERROR:
 all: main
 
-main: $(objects) main.c
-	gcc main.c $(objects) -o main	
+main: $(obj) main.c $(headers)
+	gcc main.c $(obj) -o main
 
-obj/%.o: src/%.c include/%.h
+obj/%.o: src/%.c
 	gcc $< -o $@ -c
 
 .PHONY: clean
 clean:
-	rm $(wildcard obj/*.o) main
+	@rm -f main *.o obj/*.o
 
 run: main
 	@./main
