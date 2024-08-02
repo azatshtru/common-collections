@@ -51,22 +51,22 @@ do {                                                \
 
 #define vec_push(vec, value)                        \
 do {                                                \
-    Vector* v = (Vector*)(vec);                     \
-    if(v->len >= v->cap) {                          \
-        vec_resize(v, v->cap * 2);                  \
+    Vector* __v__ = (Vector*)(vec);                 \
+    if(__v__->len >= __v__->cap) {                  \
+        vec_resize(__v__, __v__->cap * 2);          \
     }                                               \
-    (*(vec))[v->len] = value;                       \
-    ++v->len;                                       \
+    (*(vec))[__v__->len] = value;                   \
+    ++__v__->len;                                   \
 } while(0)
 
-#define vec_insert(vec, _index, value)              \
-do {                                                \
-    vec_push((vec), 0);                             \
-    Vector* v = (Vector*)(vec);                     \
-    memcpy(*(vec) + _index + 1,                     \
-        *(vec) + _index,                            \
-        v->type_size * (v->len - _index - 1));      \
-    (*(vec))[_index] = (value);                     \
+#define vec_insert(vec, _index, value)                  \
+do {                                                    \
+    vec_push((vec), 0);                                 \
+    Vector* __v__ = (Vector*)(vec);                     \
+    memcpy(*(vec) + _index + 1,                         \
+        *(vec) + _index,                                \
+        __v__->type_size * (__v__->len - _index - 1));  \
+    (*(vec))[_index] = (value);                         \
 } while(0)
 
 #endif
