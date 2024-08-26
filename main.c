@@ -1,5 +1,17 @@
 #include "include/vector.h"
+#include "include/hashmap_chassis.h"
 #include <stdio.h>
+#include <string.h>
+
+float string_cmp(char* a, char* b) {
+
+}
+
+unsigned long string_hash(char* a) {
+
+}
+
+__hashmap_impl__(sample, char*, int, string_cmp, string_hash);
 
 int main() {
     printf("hello world!\n");
@@ -13,6 +25,9 @@ int main() {
     vec_zap(v, -2);
     vec_print_primitive(v, "%d");
 
+    foo();
+
     vec_free(v, NULL);
+
     return 0;
 }
