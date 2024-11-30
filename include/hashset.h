@@ -43,6 +43,7 @@ void hashset_resize_rehash(struct hashset* hashset, unsigned int new_cardinality
 #define hashset_insert(hashset_ptr, value) (**((hashset_ptr)+2)=(value), hashset_chqnsrt(hashset_ptr, *((hashset_ptr)+2)))
 #define hashset_remove(hashset_ptr, value) (**((hashset_ptr)+2)=(value), hashset_shush_remove(hashset_ptr, *((hashset_ptr)+2)))
 #define hashset_contains(hashset_ptr, value) (**((hashset_ptr)+2)=(value), hashset_shush_contains(hashset_ptr, *((hashset_ptr)+2)))
+#define hashset_get(hashset_ptr, value) (**((hashset_ptr)+2)=(value), (*(hashset_ptr))[hashset_entry_index(hashset_ptr, *((hashset_ptr)+2), 0)])
 
 #define hashset_print_primitive(hashset_ptr, identifier)                         \
     do{                                                                          \
