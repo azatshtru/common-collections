@@ -12,6 +12,7 @@ typedef unsigned char byte;
 
 typedef struct _vector {
     byte* data;
+    byte* tmp;
     uint32 type_size;
     uint32 len;
     uint32 cap;
@@ -28,6 +29,8 @@ void vec_zap(void* vec, int index, void(*free_fn)(byte*));
 #define vi(vec_ptr, _index) (*(vec_ptr))[(_index)]
 #define vec_get(vec_ptr, _index) (*(vec_ptr))[(_index)]
 #define vec_set(vec_ptr, _index, value) (*(vec_ptr))[(_index)] = (value)
+
+#define vec_pop(vec, index) (**((vec)+1)=vi((vec), ((index) >= 0) ? (index) : (((Vector*)(vec))->len + (index))), vec_zap((vec), (index), NULL), **((vec)+1))
 
 #define vec_print(vec, print_fn)                    \
 do {                                                \

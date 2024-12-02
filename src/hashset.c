@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "../include/hashset.h"
 
 unsigned int hash_fnv1a(char* s, unsigned int length) {
