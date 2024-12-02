@@ -40,7 +40,7 @@ int main() {
   hashset_insert(h, patient_new("Carly Forlano", 32, "Congestive heart failure"));
   hashset_insert(h, patient_new("Rebecca Adler", 29, "Neurocysticercosis"));
 
-  Patient p = hashset_get(h, patient_key("Adam"));
+  Patient p = hashset_get(h, patient_key("Daniel Bresson"));
 
   hashset_print(h, patient_print);
   patient_print(p);
