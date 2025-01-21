@@ -22,7 +22,7 @@ void* hashset_allocate(unsigned int typesize, unsigned int (*hash_fn)(void*), in
         data, data_states, tmp,
         typesize, HASHSET_INIT_SIZE, 0,
         hash_fn, cmp_fn,
-        0.75, 0.1
+        0, 0.75, 0.1
     };
     *hashset_ptr = hashset;
     return (void*)hashset_ptr;
@@ -69,6 +69,7 @@ void hashset_shush_insert(void* hashset_ptr, void* value_ptr) {
     if(hashset->data_states[hash] != 2) {
         hashset->data_states[hash] = 2;
         ++hashset->len;
+        ++hashset->load;
     }
 }
 
@@ -83,14 +84,14 @@ void hashset_chqnsrt(void* hashset_ptr, void* value_ptr) {
 
 void hashset_shush_remove(void* hashset_ptr, void* value_ptr) {
     struct hashset* hashset = (struct hashset*)hashset_ptr;
+    unsigned int rehash = hashset_compute_resize(hashset);
+    if(rehash) {
+        hashset_resize_rehash(hashset, rehash);
+    }
     unsigned int hash = hashset_entry_index(hashset_ptr, value_ptr, 1);
     if(hashset->data_states[hash] == 2) {
         hashset->data_states[hash] = 1;
         --hashset->len;
-    }
-    unsigned int rehash = hashset_compute_resize(hashset);
-    if(rehash) {
-        hashset_resize_rehash(hashset, rehash);
     }
 }
 
@@ -101,7 +102,7 @@ unsigned int hashset_shush_contains(void* hashset_ptr, void* value_ptr) {
 }
 
 unsigned int hashset_compute_resize(struct hashset* hashset) {
-    float load_factor = (float)hashset->len / hashset->cardinality;
+    float load_factor = (float)hashset->load / hashset->cardinality;
     if(load_factor >= hashset->load_factor_upsize_threshold) {
         return hashset->cardinality*2;
     } else if (load_factor < hashset->load_factor_downsize_threshold && hashset->cardinality >= 2 * HASHSET_INIT_SIZE) {
@@ -120,6 +121,7 @@ void hashset_resize_rehash(struct hashset* hashset, unsigned int new_cardinality
     memset(hashset->data_states, 0, new_cardinality);
     hashset->cardinality = new_cardinality;
     hashset->len = 0;
+    hashset->load = 0;
 
     for(int i = 0; i < old_cardinality; i++) {
         if(old_data_states[i] == 2) {

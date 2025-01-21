@@ -7,7 +7,7 @@
 
 #define FNV_PRIME 16777619
 #define FNV_OFFSET_BASIS 2166136261
-#define HASHSET_INIT_SIZE 1
+#define HASHSET_INIT_SIZE 2
 
 struct hashset {
     char* data;
@@ -18,6 +18,7 @@ struct hashset {
     unsigned int len;
     unsigned int (*hash_fn)(void*);
     int (*cmp_fn)(void*, void*);
+    int load;
     float load_factor_upsize_threshold;
     float load_factor_downsize_threshold;
 };
