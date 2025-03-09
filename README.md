@@ -25,7 +25,7 @@ int main() {
 }
 ```
 ### Hashmaps
-There is a sample patient database created using hashmaps given in [Examples/patient_database.c]().
+There is a sample patient database created using hashmaps given in [Examples/patient_database.c](https://github.com/azatshtru/lemonade/blob/main/examples/patient_database.c).
 
 ## API
 ### Vectors

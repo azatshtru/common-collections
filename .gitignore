@@ -2,3 +2,4 @@ obj/
 main
 main.c
 Makefile
+.DS_Store
