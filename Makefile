@@ -1,6 +1,6 @@
 src := $(shell cd src && find . -name '*.c' -or -name '*.s')
 obj := $(addprefix obj/,$(src:.c=.o))
-headers := $(shell find include -name '*.h')
+headers := $(shell find headers -name '*.h')
 
 all: main
 

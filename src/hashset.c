@@ -1,4 +1,7 @@
-#include "../include/hashset.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "../headers/hashset.h"
 
 unsigned int hash_fnv1a(char* s, unsigned int length) {
     unsigned long int hash = FNV_OFFSET_BASIS;
@@ -10,7 +13,7 @@ unsigned int hash_fnv1a(char* s, unsigned int length) {
 }
 
 unsigned int hash_fnv1a_cstr(void* s) { return hash_fnv1a((char*)s, strlen((char*)s)); }
-int cmp_cstr(void* s1, void* s2) { return !strcmp(*(char**)s1, *(char**)s2); }
+int cmp_cstr(void* s1, void* s2) { return !strcmp((char*)s1, (char*)s2); }
 
 void* hashset_allocate(unsigned int typesize, unsigned int (*hash_fn)(void*), int (*cmp_fn)(void*, void*)) {
     struct hashset* hashset_ptr = malloc(sizeof(struct hashset)); 
@@ -75,20 +78,22 @@ void hashset_shush_insert(void* hashset_ptr, void* value_ptr) {
 
 void hashset_chqnsrt(void* hashset_ptr, void* value_ptr) {
     struct hashset* hashset = (struct hashset*)hashset_ptr;
+    hashset_shush_insert(hashset_ptr, value_ptr);
     unsigned int rehash = hashset_compute_resize(hashset);
     if(rehash) {
         hashset_resize_rehash(hashset, rehash);
     }
-    hashset_shush_insert(hashset_ptr, value_ptr);
 }
 
 void hashset_shush_remove(void* hashset_ptr, void* value_ptr) {
     struct hashset* hashset = (struct hashset*)hashset_ptr;
+
     unsigned int rehash = hashset_compute_resize(hashset);
     if(rehash) {
         hashset_resize_rehash(hashset, rehash);
     }
-    unsigned int hash = hashset_entry_index(hashset_ptr, value_ptr, 1);
+
+    unsigned int hash = hashset_entry_index(hashset_ptr, value_ptr, 0);
     if(hashset->data_states[hash] == 2) {
         hashset->data_states[hash] = 1;
         --hashset->len;
@@ -132,3 +137,34 @@ void hashset_resize_rehash(struct hashset* hashset, unsigned int new_cardinality
     free(old_data);
     free(old_data_states);
 }
+
+unsigned int hashset_len(void* hashset) {
+    return ((struct hashset*)hashset)->len;
+}
+
+int hashset_lazy_iterate(void* hashset_ptr, int index) {
+    struct hashset* hashset = (struct hashset*)hashset_ptr;
+    if(hashset->data_states[index] == 2 && index < hashset->cardinality) { index++; }
+    while(hashset->data_states[index] != 2 && index < hashset->cardinality) { index++; }
+    if(index >= hashset->cardinality) { return 0; }
+    return index;
+}
+
+void* hashset_clone(void* hashset_) {
+    struct hashset* hashset = (struct hashset*)hashset_;
+    struct hashset* hashset_ptr = malloc(sizeof(struct hashset)); 
+    char* data = malloc(hashset->typesize * hashset->cardinality);
+    memcpy(data, hashset->data, hashset->typesize * hashset->cardinality);
+    char* data_states = malloc(hashset->cardinality);
+    memcpy(data_states, hashset->data_states, hashset->cardinality);
+    char* tmp = malloc(hashset->typesize);
+    struct hashset hashset_clone = { 
+        data, data_states, tmp,
+        hashset->typesize, hashset->cardinality, hashset->len,
+        hashset->hash_fn, hashset->cmp_fn,
+        hashset->load, hashset->load_factor_upsize_threshold, hashset->load_factor_downsize_threshold
+    };
+    *hashset_ptr = hashset_clone;
+    return (void*)hashset_ptr;
+}
+

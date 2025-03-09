@@ -1,9 +1,9 @@
 #ifndef HASHSET
 #define HASHSET
 
+/* hashsets using open addressing by quadratic probing. */
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define FNV_PRIME 16777619
 #define FNV_OFFSET_BASIS 2166136261
@@ -27,9 +27,6 @@ unsigned int hash_fnv1a(char* s, unsigned int length);
 unsigned int hash_fnv1a_cstr(void* s);
 int cmp_cstr(void* s1, void* s2);
 
-#define generic_cmp(type, x, y) *(type*)x == *(type*)y
-#define generic_hash(type, x) hash_fnv1a((char*)x, sizeof(type))
-
 #define hashset(type) type**
 
 void* hashset_allocate(unsigned int typesize, unsigned int (*hash_fn)(void*), int (*cmp_fn)(void*, void*));
@@ -41,6 +38,9 @@ void hashset_shush_remove(void* hashset_ptr, void* value_ptr);
 unsigned int hashset_shush_contains(void* hashset_ptr, void* value_ptr);
 unsigned int hashset_compute_resize(struct hashset* hashset);
 void hashset_resize_rehash(struct hashset* hashset, unsigned int new_cardinality);
+unsigned int hashset_len(void* hashset);
+int hashset_lazy_iterate(void* hashset_ptr, int index);
+void* hashset_clone(void* hashset_);
 
 #define hashset_new(type, hash_fn, cmp_fn) hashset_allocate(sizeof(type), hash_fn, cmp_fn);
 #define hashset_insert(hashset_ptr, value) (**((hashset_ptr)+2)=(value), hashset_chqnsrt(hashset_ptr, *((hashset_ptr)+2)))
@@ -74,3 +74,4 @@ void hashset_resize_rehash(struct hashset* hashset, unsigned int new_cardinality
 
 
 #endif
+
