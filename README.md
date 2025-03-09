@@ -1,4 +1,4 @@
-# lemonade
+# :lemon: lemonade
 A juicy library of generic collections, all implemented in and for ANSI C.
 
 lemonade includes vectors, hashmaps, strings, queues and priority_queues. Additionally, there is a utility library containing common functionality.
